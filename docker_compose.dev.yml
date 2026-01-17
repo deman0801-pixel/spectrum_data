@@ -1,0 +1,14 @@
+version: '3'
+services:
+  db:
+    container_name: psql_data_habr
+    image: postgres:14.0
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    ports:
+      - "8100:8000"
+
+volumes:
+  postgres_data:

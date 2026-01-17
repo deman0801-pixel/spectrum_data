@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "spectrum-data"
+version = "0.1.0"
+description = ""
+authors = ["Dementyev_Andrey <dem.an.a@yandex.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = {extras = ["standart"], version = "^0.128.0"}
+sqlalchemy = "^2.0.45"
+alembic = "^1.18.1"
+pydantic-settings = "^2.12.0"
+lxml = "^6.0.2"
+aiohttp = "^3.13.3"
+
+
+[tool.poetry.group.dev.dependencies]
+uvicorn = {extras = ["standard"], version = "^0.40.0"}
+
