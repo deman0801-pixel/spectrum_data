@@ -7,18 +7,14 @@ from urllib.parse import urljoin
 from aiohttp import ClientSession
 from lxml import html
 
-
-# TODO: вынести в другой модуль
-class StatusCodeException(Exception):
-    def __init__(self, code: int):
-        super().__init__(f"Ответ с кодом {code}")
+from app.exceptions.status_code import StatusCodeException
 
 
 class Parser:
     def __init__(self):
         self.visited: Set[str] = set()
         self.visited_lock = asyncio.Lock()
-        self.results_queue = asyncio.Queue(maxsize=100)
+        self.results_queue = asyncio.Queue()
         self.non_html_extensions = (
             ".pdf",
             ".doc",
@@ -89,8 +85,12 @@ class Parser:
             await self.task_queue.put((url, depth))
 
     # TODO: реализовать после подключение к базе
-    
-    async def bulk_insert_to_db(): ...
+    async def bulk_insert_to_db():
+        """
+        Разгружает очередь результатов.
+        Массово вставляет результаты в бд при накоплении лимита
+        """
+        ...
 
     def _normalize_url(self, base_url: str, link: str) -> str:
         try:
@@ -218,12 +218,7 @@ class Parser:
         try:
             await self._create_task_queue(url, 0)
             print(self.results_queue.qsize())
+            print(self.results_queue)
         except Exception as e:
             print("🐍 File: spectrum_data/parser.py | Line: 22 | start ~ e", e)
 
-
-parser = Parser()
-
-# TODO: убрать запуск примера
-# при погружении на 3 уровень более 1000 ссылок
-parser.start("https://example.com/", 2, 5)
