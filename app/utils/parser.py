@@ -1,23 +1,27 @@
 # TODO: добавить запись в логи вместо принтов
-# TODO: останется нерешенной проблема 
-# переполнения памяти в множестве посещенных 
+# TODO: останется нерешенной проблема
+# переполнения памяти в множестве посещенных
 # ссылок visited (не успеваю).
 # Предположительно решал бы:
 # 1) установил лимит ссылок
-# 2) при заполнении извлекал 
-# 30%(тут бы еще подумал про извлечении редко используемых) 
-# и переносил в SQLite (там надо индексы навесить) 
+# 2) при заполнении извлекал
+# 30%(тут бы еще подумал про извлечении редко используемых)
+# и переносил в SQLite (там надо индексы навесить)
 # 3) проверка ссылки в visited затем в БД
 
 import asyncio
-from typing import List, Set, Tuple
+from typing import List, Optional, Set, Tuple, TypeAlias
 from urllib.parse import urljoin
 
 from aiohttp import ClientSession
 from lxml import html
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
+from app.core.database import AsyncSessionLocal
 from app.exceptions.status_code import StatusCodeException
+from app.models.page import Page
 
+Batch: TypeAlias = List[Tuple[str, str, str]]
 
 class Parser:
     def __init__(self):
@@ -93,13 +97,29 @@ class Parser:
             self.visited.add(url)
             await self.task_queue.put((url, depth))
 
-    # TODO: реализовать после подключение к базе
-    async def bulk_insert_to_db():
+    async def _bulk_insert_to_db(self, batch: Batch):
         """
         Разгружает очередь результатов.
         Массово вставляет результаты в бд при накоплении лимита
         """
-        ...
+        if not batch:
+            return 0
+        async with AsyncSessionLocal() as session:
+            try:
+                values = [
+                    {"url": url, "title": title, "html": html}
+                    for url, title, html in batch
+                ]
+                query = pg_insert(Page).values(values)
+                query = query.on_conflict_do_update(
+                    index_elements=["url"],
+                    set_={"title": query.excluded.title, "html": query.excluded.html},
+                )
+                await session.execute(query)
+                await session.commit()
+            except Exception as e:
+                await session.rollback()
+                print(f"Ошибка при массовой вставке: {e}")
 
     def _normalize_url(self, base_url: str, link: str) -> str:
         try:
@@ -136,10 +156,7 @@ class Parser:
                         (html_content, title, links) = await self._parse_response(
                             response
                         )
-                        await self.results_queue.put(
-                            (url, title, "0")
-                        )  # TODO: заменить "0" на html_content
-                        print("ссылок в очереди: ", self.results_queue.qsize())
+                        await self.results_queue.put((url, title, html_content))
                         if depth < self.max_depth and links:
                             for link in links:
                                 normalized = self._normalize_url(url, link)
@@ -168,7 +185,7 @@ class Parser:
                     not self.is_saving and self.results_queue.empty()
                 ):
                     if batch:
-                        await self.bulk_insert_to_db(batch)
+                        await self._bulk_insert_to_db(batch)
                         batch = []
 
                 self.results_queue.task_done()
@@ -179,13 +196,13 @@ class Parser:
                 continue
             except asyncio.CancelledError:
                 if batch:
-                    await self.bulk_insert_to_db(batch)
+                    await self._bulk_insert_to_db(batch)
                 break
             except Exception as e:
                 print(f"Ошибка в воркере БД: {e}")
 
         if batch:
-            await self.bulk_insert_to_db(batch)
+            await self._bulk_insert_to_db(batch)
 
     async def _parse_task_worker(self):
         while self.is_run:
@@ -211,9 +228,8 @@ class Parser:
         for _ in range(self.requests_limit):
             task = asyncio.create_task(self._parse_task_worker())
             tasks.append(task)
-            # TODO: вернуть чтение из очереди. Пока не реализована запись в бд
-            # db_task = asyncio.create_task(self.())
-            # tasks.append(db_task)
+            db_task = asyncio.create_task(self._db_save_worker())
+            tasks.append(db_task)
         try:
             await self.task_queue.join()
         finally:
@@ -226,8 +242,7 @@ class Parser:
     async def _parse(self, url: str):
         try:
             await self._create_task_queue(url, 0)
-            print(self.results_queue.qsize())
-            print(self.results_queue)
         except Exception as e:
             print("🐍 File: spectrum_data/parser.py | Line: 22 | start ~ e", e)
+
 
