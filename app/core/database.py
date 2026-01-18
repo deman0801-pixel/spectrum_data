@@ -1,4 +1,3 @@
-from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
@@ -21,7 +20,7 @@ async_database_url = f"postgresql+asyncpg://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB}
 
 engine: AsyncEngine = create_async_engine(
     async_database_url,
-    echo=True,
+    echo=False,
     pool_pre_ping=True,
     pool_size=20,
     max_overflow=40,

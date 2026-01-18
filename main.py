@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 
 from app.api.routers.searching import endpoints as searching
 from app.api.routers.geting import endpoints as geting
+from app.api.routers.crawler_manage import endpoints as crawler_manage
 from app.core.database import engine
 from app.models.page import Base
 
@@ -14,7 +15,7 @@ async def create_tables():
 
 
 app = FastAPI(title="Pages", version="1.0.0")
-for handler in (geting, searching):
+for handler in (geting, searching, crawler_manage):
     app.include_router(handler.router)
 
 app.add_middleware(

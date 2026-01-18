@@ -21,7 +21,6 @@ class TaskManager:
     async def add_task_to_queue(self, url: str, depth: int):
         async with self.visited_lock:
             if url in self.visited:
-                print(f"Уже был: {url}")
                 return
             self.visited.add(url)
             await self.task_queue.put((url, depth))

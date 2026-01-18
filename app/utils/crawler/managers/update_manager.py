@@ -21,7 +21,6 @@ class UpdateManager:
         async with self._lock:
             if self.session is None:
                 self.session = AsyncSessionLocal()
-                print("✅ Сессия БД создана")
             try:
                 values = [
                     {"url": url, "title": title, "html": html}

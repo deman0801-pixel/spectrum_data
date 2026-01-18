@@ -9,7 +9,7 @@
 # и переносил в SQLite (там надо индексы навесить)
 # 3) проверка ссылки в visited затем в БД
 
-from asyncio import Queue, run
+from asyncio import Queue
 from typing import Set
 
 from app.utils.crawler.managers.html_manager import HTMLManager
@@ -26,7 +26,7 @@ class Crawler:
         self.visited: Set[str] = set()
         self.results_queue = Queue()
 
-    def start(
+    async def start(
         self,
         url: str,
         max_depth: int = 0,
@@ -56,7 +56,7 @@ class Crawler:
             task_timeout=task_timeout,
         )
 
-        run(self._parse(url))
+        await self._parse(url)
 
     async def _parse(self, url: str):
         try:
@@ -69,4 +69,5 @@ class Crawler:
                 self.update_manager,
             )
         except Exception as e:
-            print("🐍 File: spectrum_data/parser.py | Line: 22 | start ~ e", e)
+            print("Непредвиденная шибка во время обхода", e)
+        print("Закончил обход")
