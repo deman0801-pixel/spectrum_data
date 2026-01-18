@@ -15,8 +15,6 @@ lxml = "^6.0.2"
 aiohttp = "^3.13.3"
 asyncpg = "^0.31.0"
 psycopg2-binary = "^2.9.11"
+uvicorn = "^0.40.0"
 
-
-[tool.poetry.group.dev.dependencies]
-uvicorn = {extras = ["standard"], version = "^0.40.0"}
 

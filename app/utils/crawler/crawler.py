@@ -10,6 +10,7 @@
 # 3) проверка ссылки в visited затем в БД
 
 from asyncio import Queue
+import logging
 from typing import Set
 
 from app.utils.crawler.managers.html_manager import HTMLManager
@@ -60,6 +61,7 @@ class Crawler:
 
     async def _parse(self, url: str):
         try:
+            print("Начал обход")
             await self.task_manager.create_task_queue(
                 url,
                 0,
@@ -70,4 +72,5 @@ class Crawler:
             )
         except Exception as e:
             print("Непредвиденная шибка во время обхода", e)
-        print("Закончил обход")
+        finally:    
+            print("Закончил обход")
