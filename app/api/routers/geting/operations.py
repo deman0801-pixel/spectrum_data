@@ -14,14 +14,14 @@ async def get_pages(
         select(Page.url, Page.title)
         .offset(skip)
         .limit(limit)
-        .order_by(Page.id)
+        .order_by(Page.url)
     )
     result = await db.execute(query)
     pages = result.all()
     return pages
 
 
-async def get_html_by_id(db: AsyncConnection, url: str) -> HtmlView:
+async def get_html_by_url(db: AsyncConnection, url: str) -> HtmlView:
     query = (
         select(Page.html).where(Page.url == url)
     )

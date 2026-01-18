@@ -23,7 +23,7 @@ class Crawler:
         task_timeout: int = 5,
         request_timeout: int = 10,
     ):
-        self.max_depth = max_depth
+        self.max_depth = max_depth - 1
         self.requests_limit = requests_limit
         self.update_manager = UpdateManager()
         self.url_manager = URLManager()

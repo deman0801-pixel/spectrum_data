@@ -20,7 +20,7 @@ async def find_pages_by_text(
         .where(field_to_search.ilike(f"%{search_str}%"))
         .offset(skip)
         .limit(limit)
-        .order_by(Page.id)
+        .order_by(Page.url)
     )
     result = await db.execute(query)
     pages = result.all()
