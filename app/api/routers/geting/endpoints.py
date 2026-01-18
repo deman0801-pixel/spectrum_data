@@ -1,15 +1,21 @@
 from typing import List
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncConnection
+
+from app.api.routers.geting.operations import get_html_by_id, get_pages
 from app.core.database import get_db_connection
 from app.shemas.outer_shemas import HtmlView, MainPageView
-from app.api.routers.geting.operations import get_pages, get_html_by_id
 from app.utils.decorators.catcher_500 import catcher_500
 
-router = APIRouter(prefix="/get", tags=["getting_methods"])
+router = APIRouter(prefix="/get", tags=["Ендпоинты для получения записей"])
 
 
-@router.get("/all", response_model=List[MainPageView])
+@router.get(
+    "/all",
+    response_model=List[MainPageView],
+    summary="Получить все записи, с учетом смещения",
+)
 @catcher_500
 async def get_all(
     skip: int = Query(0, ge=0, description="Сколько пропустить"),
@@ -20,7 +26,11 @@ async def get_all(
     return pages
 
 
-@router.get("/{url}", response_model=HtmlView)
+@router.get(
+    "/{url}",
+    response_model=HtmlView,
+    summary="Получить разметку html для конкретного url",
+)
 @catcher_500
 async def get_html(
     url: str,

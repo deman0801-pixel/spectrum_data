@@ -3,10 +3,10 @@ from fastapi import APIRouter, BackgroundTasks
 from app.shemas.inner_shemas import CrawlRequest
 from app.utils.crawler.crawler import Crawler
 
-router = APIRouter(prefix="/crawler", tags=["управление обходчиком"])
+router = APIRouter(prefix="/crawler", tags=["Управление обходчиком"])
 
 
-@router.post("/start")
+@router.post("/start", summary="Запустить обходчик")
 async def start_crawler(request: CrawlRequest, background_tasks: BackgroundTasks):
     crawler = Crawler()
 
