@@ -2,6 +2,7 @@ from typing import List, Tuple
 from app.exceptions.status_code import StatusCodeException
 from lxml import html
 
+
 class HTMLManager:
     async def parse_response(self, response) -> Tuple[str, str, List[str]]:
         code: int = response.status

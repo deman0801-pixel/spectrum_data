@@ -1,4 +1,3 @@
-
 from asyncio import CancelledError, Semaphore
 from aiohttp import ClientSession
 
@@ -57,4 +56,3 @@ class RequestManager:
             except Exception as e:
                 print(f"Непредвиденная ошибка {url}: {e}")
                 return False
-

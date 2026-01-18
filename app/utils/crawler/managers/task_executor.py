@@ -1,5 +1,3 @@
-
-
 from app.utils.crawler.managers.rquest_manager import RequestManager
 
 
@@ -12,4 +10,3 @@ class TaskExecutor:
         if depth > self.max_depth:
             return
         await self.request_manager.get(url, depth)
-

@@ -40,21 +40,27 @@ class WorkerManager:
         batch = []
         batch_size = 100
 
-        while self.update_manager.is_saving or not self.task_manager.results_queue.empty():
+        while (
+            self.update_manager.is_saving or not self.task_manager.results_queue.empty()
+        ):
             try:
                 url, title, content = await wait_for(
                     self.task_manager.results_queue.get(), timeout=self.task_timeout
                 )
                 batch.append((url, title, content))
                 if len(batch) >= batch_size or (
-                    not self.update_manager.is_saving and self.task_manager.results_queue.empty()
+                    not self.update_manager.is_saving
+                    and self.task_manager.results_queue.empty()
                 ):
                     if batch:
                         await self.update_manager.bulk_insert_to_db(batch)
                         batch = []
                 self.task_manager.results_queue.task_done()
             except TimeoutError:
-                if not self.update_manager.is_saving and self.task_manager.results_queue.empty():
+                if (
+                    not self.update_manager.is_saving
+                    and self.task_manager.results_queue.empty()
+                ):
                     break
                 continue
             except CancelledError:
@@ -65,4 +71,3 @@ class WorkerManager:
                 print(f"Ошибка в воркере БД: {e}")
         if batch:
             await self.update_manager.bulk_insert_to_db(batch)
-

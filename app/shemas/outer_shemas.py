@@ -9,6 +9,7 @@ class MainPageView(BaseModel):
 class HtmlView(BaseModel):
     html: str
 
+
 class ErrorResponse(BaseModel):
     status: int
     message: str

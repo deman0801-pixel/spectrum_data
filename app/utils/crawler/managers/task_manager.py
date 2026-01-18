@@ -1,4 +1,3 @@
-
 from asyncio import (
     Lock,
     Queue,
@@ -32,7 +31,7 @@ class TaskManager:
         requests_limit: int,
         parse_task_worker: Callable,
         db_save_worker: Callable,
-        update_manager: UpdateManager
+        update_manager: UpdateManager,
     ):
         await self.add_task_to_queue(url, current_depth)
         tasks = []

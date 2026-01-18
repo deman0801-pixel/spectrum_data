@@ -60,5 +60,5 @@ class Crawler:
             )
         except Exception as e:
             print("Непредвиденная шибка во время обхода", e)
-        finally:    
+        finally:
             print("Закончил обход")
