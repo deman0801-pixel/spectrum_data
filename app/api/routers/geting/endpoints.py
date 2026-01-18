@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncConnection
 from app.core.database import get_db_connection
 from app.shemas.outer_shemas import HtmlView, MainPageView
@@ -12,8 +12,8 @@ router = APIRouter(prefix="/get", tags=["getting_methods"])
 @router.get("/all", response_model=List[MainPageView])
 @catcher_500
 async def get_all(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0, description="Сколько пропустить"),
+    limit: int = Query(100, ge=1, le=200, description="Лимит записей"),
     db: AsyncConnection = Depends(get_db_connection),
 ):
     pages = await get_pages(db, skip=skip, limit=limit)

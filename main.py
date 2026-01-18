@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from app.api.routers.finding import endpoints as finding
+from app.api.routers.searching import endpoints as searching
 from app.api.routers.geting import endpoints as geting
 from app.core.database import engine
 from app.models.page import Base
@@ -14,7 +14,7 @@ async def create_tables():
 
 
 app = FastAPI(title="Pages", version="1.0.0")
-for handler in (geting, finding):
+for handler in (geting, searching):
     app.include_router(handler.router)
 
 app.add_middleware(

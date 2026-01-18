@@ -3,7 +3,7 @@ from typing import List, Literal
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncConnection
 
-from app.api.routers.finding.operations import find_pages_by_text
+from app.api.routers.searching.operations import find_pages_by_text
 from app.core.database import get_db_connection
 from app.shemas.outer_shemas import MainPageView
 from app.utils.decorators.catcher_500 import catcher_500
