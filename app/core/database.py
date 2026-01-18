@@ -1,8 +1,12 @@
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import (
+    AsyncConnection,
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
+    
 )
 
 from app.core.config import settings
@@ -31,3 +35,12 @@ AsyncSessionLocal = async_sessionmaker(
     autocommit=False,
     autoflush=False,
 )
+
+async def get_db_connection() -> AsyncGenerator[AsyncConnection, None]:
+    connection = None
+    try:
+        connection = await engine.connect()
+        yield connection
+    finally:
+        if connection:
+            await connection.close()
