@@ -1,10 +1,14 @@
 from pydantic import BaseModel
-    
-    
+
+
 class MainPageView(BaseModel):
-    url: str 
-    title: str 
-    
-    
+    url: str
+    title: str
+
+
 class HtmlView(BaseModel):
-    html: str 
+    html: str
+
+class ErrorResponse(BaseModel):
+    status: int
+    message: str

@@ -4,11 +4,13 @@ from sqlalchemy.ext.asyncio import AsyncConnection
 from app.core.database import get_db_connection
 from app.shemas.outer_shemas import HtmlView, MainPageView
 from app.api.routers.geting.operations import get_pages, get_html_by_id
+from app.utils.decorators.catcher_500 import catcher_500
 
 router = APIRouter(prefix="/get", tags=["getting_methods"])
 
 
 @router.get("/all", response_model=List[MainPageView])
+@catcher_500
 async def get_all(
     skip: int = 0,
     limit: int = 100,
@@ -19,6 +21,7 @@ async def get_all(
 
 
 @router.get("/{url}", response_model=HtmlView)
+@catcher_500
 async def get_html(
     url: str,
     db: AsyncConnection = Depends(get_db_connection),

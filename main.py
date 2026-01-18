@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from app.api.routers.finding import endpoints as finding
+from app.api.routers.geting import endpoints as geting
 from app.core.database import engine
 from app.models.page import Base
-from app.api.routers.geting import endpoints as geting
-from app.api.routers.finding import endpoints as finding
+
 
 async def create_tables():
     async with engine.begin() as conn:
