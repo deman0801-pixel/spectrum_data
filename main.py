@@ -4,7 +4,8 @@ from fastapi.responses import RedirectResponse
 
 from app.core.database import engine
 from app.models.page import Base
-from app.api.routers.geting import endpoints
+from app.api.routers.geting import endpoints as geting
+from app.api.routers.finding import endpoints as finding
 
 async def create_tables():
     async with engine.begin() as conn:
@@ -12,7 +13,7 @@ async def create_tables():
 
 
 app = FastAPI(title="Pages", version="1.0.0")
-for handler in (endpoints,):
+for handler in (geting, finding):
     app.include_router(handler.router)
 
 app.add_middleware(
