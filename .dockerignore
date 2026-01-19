@@ -1,0 +1,10 @@
+.env.example
+.gitignore
+__pycache__
+.env
+docker_compose.dev.yml
+DockerFile
+run_crawler.py
+*.lock
+*.toml
+/test
